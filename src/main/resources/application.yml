@@ -1,0 +1,37 @@
+micronaut:
+  application:
+    name: puls
+  server:
+    thread-selection: auto
+  http:
+    client:
+      read-timeout: 300s
+  metrics:
+    enabled: true
+    binders:
+      uptime:
+        enabled: true
+      processor:
+        enabled: true
+      jvm:
+        enabled: true
+    export:
+      prometheus:
+        enabled: true
+        step: PT1M
+        descriptions: true
+
+endpoints:
+  all:
+    enabled: true
+    sensitive: false
+
+jackson:
+  bean-introspection-module: true
+  serialization:
+    indentOutput: true
+
+amplitude:
+  apikey: 'apikey'
+  secret: 'secret'
+
