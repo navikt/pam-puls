@@ -1,0 +1,26 @@
+package no.nav.arbeidsplassen.puls.batch
+
+import io.micronaut.test.extensions.junit5.annotation.MicronautTest
+import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Test
+
+
+@MicronautTest
+class BatchRunRepositoryTest(private val batchRunRepository: BatchRunRepository) {
+
+    @Test
+    fun saveAndRead() {
+        val batchRun = batchRunRepository.save(BatchRun(name = "amplitude-20211107-20211108"))
+        assertNotNull(batchRun.id)
+        val update = batchRun.copy(status=BatchRunStatus.DONE, totalEvents = 100)
+        batchRunRepository.save(update)
+        val inDb = batchRunRepository.findByName("amplitude-20211107-20211108")
+        val notInDB = batchRunRepository.findByName("doesnotexist")
+        assertNotNull(inDb)
+        assertEquals(inDb?.status, BatchRunStatus.DONE)
+        assertEquals(inDb?.totalEvents, 100)
+        assertNull(notInDB)
+        val maxId = batchRunRepository.findMaxId()
+        assertNotNull(maxId)
+    }
+}

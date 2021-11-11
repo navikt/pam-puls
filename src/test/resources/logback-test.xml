@@ -6,6 +6,11 @@
         </encoder>
     </appender>
     <logger name="no.nav.arbeidsplassen" level="DEBUG" />
+    <logger name="io.micronaut.data.query" level="DEBUG"/>
+    <logger name="io.micronaut.transaction.jdbc.DataSourceTransactionManager" level="DEBUG" />
+    <logger name="io.micronaut.transaction.support" level="DEBUG" />
+    <logger name="com.zaxxer.hikari" level="DEBUG" />
+
     <root level="INFO">
         <appender-ref ref="stdout"/>
     </root>

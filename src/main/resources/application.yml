@@ -20,7 +20,6 @@ micronaut:
         enabled: true
         step: PT1M
         descriptions: true
-
 endpoints:
   all:
     enabled: true
@@ -31,6 +30,21 @@ jackson:
   serialization:
     indentOutput: true
 
+datasources:
+  default:
+    url: ${DB_JDBC_URL:`jdbc:tc:postgresql:12:///puls?TC_INITSCRIPT=postgres/postgres-init.sql`}
+    driverClassName: ${DB_DRIVER:org.testcontainers.jdbc.ContainerDatabaseDriver}
+    username: ${DB_USERNAME:puls}
+    password: ${DB_PASSWORD:puls}
+    maximum-pool-size: 4
+    minimum-idle: 0
+    pool-name: default
+    connection-init-sql: "set time zone 'UTC'"
+flyway:
+  datasources:
+    default:
+      locations: classpath:db/migration
+      #clean-on-validation-error: true
 amplitude:
   apikey: 'apikey'
   secret: 'secret'

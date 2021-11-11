@@ -1,9 +1,29 @@
 package no.nav.arbeidsplassen.puls.event
 
-import java.time.LocalDateTime
-import java.util.*
 
-data class PulsEventTotal(val id: UUID = UUID.randomUUID(), val oId: String?, val created: LocalDateTime = LocalDateTime.now(), val updated: LocalDateTime = LocalDateTime.now(),
-                          val total: Long = 1, val type: String, val title: String?)
+import io.micronaut.data.annotation.GeneratedValue
+import io.micronaut.data.annotation.Id
+import io.micronaut.data.annotation.MappedEntity
+import io.micronaut.data.annotation.TypeDef
+import io.micronaut.data.model.DataType
+import java.time.Instant
+import java.time.LocalDateTime
+
+
+@MappedEntity
+data class PulsEventTotal(
+    @field:Id
+    @field:GeneratedValue
+    var id: Long? = null,
+    val oid: String,
+    val total: Long = 1,
+    val type: String,
+    @field:TypeDef(type = DataType.JSON)
+    val properties: Map<String,Any> = emptyMap(),
+    val created: Instant = Instant.now(),
+    val updated: Instant = Instant.now()
+)
+
+fun PulsEventTotal.isNew(): Boolean = id == null
 
 

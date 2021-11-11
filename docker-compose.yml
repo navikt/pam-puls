@@ -1,0 +1,25 @@
+---
+version: '3'
+services:
+  postgres_puls:
+    hostname: postgres
+    container_name: postgres_puls
+    image: postgres:12
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: postgres
+    volumes:
+    - ./src/test/resources/postgres:/docker-entrypoint-initdb.d
+    command: ["postgres", "-c", "log_statement=all"]
+  puls:
+    build: .
+    depends_on:
+      - postgres_puls
+    ports:
+      - "9028:9028"
+    environment:
+      DB_PASSWORD: puls
+      DB_USERNAME: puls
+      DB_DRIVER: org.postgresql.Driver
+      DB_HOST: 'postgres'
