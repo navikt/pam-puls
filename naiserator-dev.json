@@ -1,0 +1,4 @@
+{
+  "ingress": ["https://pam-puls.dev-gcp.nais.io"],
+  "cloudsql_tier": "db-custom-1-3840"
+}

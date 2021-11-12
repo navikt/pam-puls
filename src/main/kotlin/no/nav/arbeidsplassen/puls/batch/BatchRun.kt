@@ -6,6 +6,7 @@ import io.micronaut.data.annotation.MappedEntity
 import io.micronaut.data.annotation.TypeDef
 import io.micronaut.data.model.DataType
 import java.time.Instant
+import java.time.OffsetDateTime
 
 
 @MappedEntity
@@ -18,7 +19,7 @@ data class BatchRun(
     val status: BatchRunStatus = BatchRunStatus.PENDING,
     val updated: Instant = Instant.now(),
     val totalEvents: Int = 0,
-    val startTime: Instant = Instant.now(),
-    val endTime: Instant = Instant.now()
+    val startTime: OffsetDateTime = OffsetDateTime.now(),
+    val endTime: OffsetDateTime = OffsetDateTime.now()
 )
 fun BatchRun.isNew(): Boolean = id == null

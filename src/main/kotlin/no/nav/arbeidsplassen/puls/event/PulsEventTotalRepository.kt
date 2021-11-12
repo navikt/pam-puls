@@ -8,14 +8,12 @@ import io.micronaut.data.runtime.config.DataSettings
 import java.sql.Connection
 import java.sql.PreparedStatement
 import java.sql.Statement
-import java.sql.Timestamp
-import java.time.Instant
 import javax.transaction.Transactional
 
 @JdbcRepository(dialect = Dialect.POSTGRES)
 abstract class PulsEventTotalRepository(private val connection: Connection, private val objectMapper: ObjectMapper): CrudRepository<PulsEventTotal, Long> {
 
-    val insertSQL = """insert into "puls_event_total" ("oid", "total", "type", "properties", "created", "updated" ) values (?,?,?,?::JSON,?,clock_timestamp())"""
+    val insertSQL = """insert into "puls_event_total" ("oid", "total", "type", "properties", "created", "updated" ) values (?,?,?,?::jsonb,?,clock_timestamp())"""
     val updateSQL = """update "puls_event_total" set "oid"=?, "total"=?, "type"=?, "properties"=?, "created"=?, "updated"=clock_timestamp() where "id"=?"""
 
 
@@ -47,7 +45,7 @@ abstract class PulsEventTotalRepository(private val connection: Connection, priv
         setLong(2, entity.total)
         setString(3, entity.type)
         setString(4, objectMapper.writeValueAsString(entity.properties))
-        setTimestamp(5, entity.created.toTimeStamp())
+        setObject(5, entity.created)
         if (entity.isNew()) {
             DataSettings.QUERY_LOG.debug("Executing SQL INSERT: $insertSQL")
         }
@@ -60,8 +58,4 @@ abstract class PulsEventTotalRepository(private val connection: Connection, priv
     @Transactional
     abstract fun findByOid(oid: String): List<PulsEventTotal>
 
-}
-
-fun Instant.toTimeStamp(): Timestamp {
-    return Timestamp.from(this)
 }

@@ -5,11 +5,9 @@ import io.micronaut.data.jdbc.annotation.JdbcRepository
 import io.micronaut.data.model.query.builder.sql.Dialect
 import io.micronaut.data.repository.CrudRepository
 import io.micronaut.data.runtime.config.DataSettings
-import no.nav.arbeidsplassen.puls.event.toTimeStamp
 import java.sql.Connection
 import java.sql.PreparedStatement
 import java.sql.Statement
-import java.time.Instant
 import javax.transaction.Transactional
 
 @JdbcRepository(dialect = Dialect.POSTGRES)
@@ -43,8 +41,8 @@ abstract class BatchRunRepository(private val connection: Connection): CrudRepos
         setString(index, entity.name)
         setString(++index, entity.status.name)
         setInt(++index, entity.totalEvents)
-        setTimestamp(++index, entity.startTime.toTimeStamp())
-        setTimestamp(++index, entity.endTime.toTimeStamp())
+        setObject(++index, entity.startTime)
+        setObject(++index, entity.endTime)
         if (entity.isNew()) {
             DataSettings.QUERY_LOG.debug("Executing SQL INSERT: $insertSQL")
         }

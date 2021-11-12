@@ -8,6 +8,7 @@ import no.nav.arbeidsplassen.puls.event.PulsEventTotalService
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.time.Instant
+import java.time.OffsetDateTime
 import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
@@ -26,11 +27,11 @@ class BatchFetchAmplitudeExport(private val client: AmplitudeClient, private val
         private val LOG = LoggerFactory.getLogger(BatchFetchAmplitudeExport::class.java)
     }
 
-    fun processAmplitudeExports() {
+    fun startBatchRunFetchExports() {
         val fetchFrom = batchRunRepository.findMaxId()?.let {
             batchRunRepository.findById(it).get().endTime.plus(1,ChronoUnit.HOURS)
         } ?: run {
-            Instant.now().minus(2, ChronoUnit.HOURS)
+            OffsetDateTime.now().minus(2, ChronoUnit.HOURS)
         }
         val exportInfo = fetchAmplitudeExport(fetchFrom)
         batchRunRepository.findByName(exportInfo.batchRunName)?.let {
@@ -60,8 +61,8 @@ class BatchFetchAmplitudeExport(private val client: AmplitudeClient, private val
         unzippedFiles.forEach { File(it).delete() }
     }
 
-    fun fetchAmplitudeExport(startTime: Instant = Instant.now().minus(2, ChronoUnit.HOURS),
-                             endTime: Instant = startTime): AmplitudeExportInfo {
+    fun fetchAmplitudeExport(startTime: OffsetDateTime = OffsetDateTime.now().minus(2, ChronoUnit.HOURS),
+                             endTime: OffsetDateTime = startTime): AmplitudeExportInfo {
         val startstr = formatter.format(startTime)
         val endstr = formatter.format(endTime)
         LOG.info("Fetching amplitude export from $startstr to $endstr")
