@@ -33,6 +33,8 @@ spec:
   {{#each ingress as |url|}}
      - {{url}}
   {{/each}}
+  envFrom:
+    - secret: pam-puls
   env:
     - name: DB_DRIVER
       value: "org.postgresql.Driver"

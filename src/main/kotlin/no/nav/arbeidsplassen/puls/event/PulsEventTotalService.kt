@@ -20,9 +20,9 @@ class PulsEventTotalService(private val repository: PulsEventTotalRepository, pr
         val event = repository.findByOidAndType(dto.oid, dto.type)?.let {
             it.copy(total = it.total + dto.total, properties = dto.properties)
         } ?: dto.toEntity()
-        val dto = repository.save(event).toDTO()
-        outboxRepository.save(Outbox(oid = dto.oid, payload = dto))
-        return dto
+        val saved = repository.save(event).toDTO()
+        outboxRepository.save(Outbox(oid = saved.oid, payload = saved))
+        return saved
     }
 
     private fun PulsEventTotal.toDTO(): PulsEventTotalDTO {

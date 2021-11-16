@@ -40,11 +40,13 @@ datasources:
     maximum-pool-size: 4
     minimum-idle: 0
     pool-name: default
+
 flyway:
   datasources:
     default:
       locations: classpath:db/migration
       #clean-on-validation-error: true
+
 amplitude:
   apikey: 'apikey'
   secret: 'secret'

@@ -6,6 +6,7 @@
     </appender>
 
     <logger name="no.nav" level="INFO" />
+
     <root level="INFO">
         <appender-ref ref="stdout_json" />
     </root>
