@@ -26,3 +26,5 @@ create table batch_run(
     UNIQUE(name)
 );
 
+CREATE INDEX batch_run_startime_idx ON batch_run(start_time);
+CREATE INDEX batch_run_endtime_idx ON batch_run(end_time);

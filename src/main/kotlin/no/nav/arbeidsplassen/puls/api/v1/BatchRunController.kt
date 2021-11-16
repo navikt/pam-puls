@@ -23,11 +23,9 @@ class BatchRunController(private val batchRunRepository: BatchRunRepository,
         return batchRunRepository.findByName(name)
     }
 
-    @Get("/last/batch")
-    fun fetchLastBatchRun(): BatchRun? {
-        return batchRunRepository.findMaxId()?.let {
-            batchRunRepository.findById(it).get()
-        }
+    @Get("/periode")
+    fun fetchLastBatchRun(@QueryValue from: String): List<BatchRun> {
+        return batchRunRepository.findByStartTimeGreaterThanEquals(from.toInstant())
     }
 
     @Post("/start")

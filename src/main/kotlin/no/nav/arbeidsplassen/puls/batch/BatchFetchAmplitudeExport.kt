@@ -1,5 +1,7 @@
 package no.nav.arbeidsplassen.puls.batch
 
+import io.micrometer.core.instrument.MeterRegistry
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import io.micronaut.aop.Around
 import jakarta.inject.Singleton
 import kotlinx.coroutines.runBlocking
@@ -20,7 +22,8 @@ import javax.transaction.Transactional
 @Singleton
 @Around
 class BatchFetchAmplitudeExport(private val client: AmplitudeClient, private val amplitudeParser: AmplitudeParser,
-                                private val pulsEventTotalService: PulsEventTotalService, private val batchRunRepository: BatchRunRepository) {
+                                private val pulsEventTotalService: PulsEventTotalService, private val batchRunRepository: BatchRunRepository,
+                                private val meterRegistry: MeterRegistry) {
 
 
     companion object {
@@ -61,6 +64,7 @@ class BatchFetchAmplitudeExport(private val client: AmplitudeClient, private val
             totalEvents = +events.size
         }
         LOG.info("Batch ${exportInfo.batchRunName} run successfully with totalEvents $totalEvents")
+        meterRegistry.counter("batch_run", "name", "amplitude").increment(totalEvents.toDouble())
         unzippedFiles.forEach { File(it).delete() }
         exportInfo.tmpFile.delete()
         return batchRunRepository.save(batchRun.copy(status = BatchRunStatus.DONE, totalEvents = totalEvents))

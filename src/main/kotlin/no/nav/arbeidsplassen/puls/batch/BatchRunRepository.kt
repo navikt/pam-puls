@@ -59,8 +59,9 @@ abstract class BatchRunRepository(private val connection: Connection): CrudRepos
     abstract fun findByName(name:String): BatchRun?
 
     @Transactional
-    @Query("SELECT MAX(id) FROM batch_run")
-    abstract fun findMaxId(): Long?
+    abstract fun findByStartTimeGreaterThanEquals(startTime: Instant): List<BatchRun>
+
+
 }
 
 fun Instant.toTimestamp() = Timestamp.from(this)
