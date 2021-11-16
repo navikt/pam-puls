@@ -1,9 +1,11 @@
 package no.nav.arbeidsplassen.puls.event
 
 import jakarta.inject.Singleton
+import no.nav.arbeidsplassen.puls.outbox.Outbox
+import no.nav.arbeidsplassen.puls.outbox.OutboxRepository
 
 @Singleton
-class PulsEventTotalService(private val repository: PulsEventTotalRepository) {
+class PulsEventTotalService(private val repository: PulsEventTotalRepository, private val outboxRepository: OutboxRepository) {
 
 
     fun findByOidAndType(oid: String, type: String): PulsEventTotalDTO? {
@@ -18,7 +20,9 @@ class PulsEventTotalService(private val repository: PulsEventTotalRepository) {
         val event = repository.findByOidAndType(dto.oid, dto.type)?.let {
             it.copy(total = it.total + dto.total, properties = dto.properties)
         } ?: dto.toEntity()
-       return repository.save(event).toDTO()
+        val dto = repository.save(event).toDTO()
+        outboxRepository.save(Outbox(oid = dto.oid, payload = dto))
+        return dto
     }
 
     private fun PulsEventTotal.toDTO(): PulsEventTotalDTO {

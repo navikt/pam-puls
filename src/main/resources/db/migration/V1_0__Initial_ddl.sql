@@ -1,30 +1,45 @@
-CREATE SEQUENCE puls_event_total_id_seq START WITH 1000;
+create sequence puls_event_total_id_seq start with 1000;
 
-CREATE TABLE puls_event_total(
-    id NUMERIC(19,0) NOT NULL DEFAULT NEXTVAL('puls_event_total_id_seq'),
-    oid VARCHAR(36) NOT NULL,
-    type VARCHAR(255) NOT NULL,
-    total NUMERIC(19,0) NOT NULL DEFAULT 1,
-    properties JSONB NOT NULL,
-    created TIMESTAMPTZ NOT NULL DEFAULT clock_timestamp(),
-    updated TIMESTAMPTZ NOT NULL DEFAULT clock_timestamp(),
-    PRIMARY KEY(id),
-    UNIQUE (oid, type)
+create table puls_event_total(
+    id numeric(19,0) not null default nextval('puls_event_total_id_seq'),
+    oid varchar(36) not null,
+    type varchar(255) not null,
+    total numeric(19,0) not null default 1,
+    properties jsonb not null,
+    created timestamptz not null default clock_timestamp(),
+    updated timestamptz not null default clock_timestamp(),
+    primary key(id),
+    unique (oid, type)
 );
 
-CREATE SEQUENCE  batch_run_id_seq START WITH 1000;
+create sequence  batch_run_id_seq start with 1000;
 
 create table batch_run(
-    id NUMERIC(19,0) NOT NULL DEFAULT NEXTVAL('batch_run_id_seq'),
-    name VARCHAR(1024) NOT NULL,
-    status VARCHAR(36) NOT NULL,
-    updated TIMESTAMPTZ NOT NULL DEFAULT  clock_timestamp(),
-    total_events INTEGER NOT NULL DEFAULT 0,
-    start_time TIMESTAMPTZ NOT NULL,
-    end_time TIMESTAMPTZ NOT NULL,
-    PRIMARY KEY(id),
-    UNIQUE(name)
+    id numeric(19,0) not null default nextval('batch_run_id_seq'),
+    name varchar(1024) not null,
+    status varchar(36) not null,
+    updated timestamptz not null default  clock_timestamp(),
+    total_events integer not null default 0,
+    start_time timestamptz not null,
+    end_time timestamptz not null,
+    primary key(id),
+    unique(name)
 );
 
-CREATE INDEX batch_run_startime_idx ON batch_run(start_time);
-CREATE INDEX batch_run_endtime_idx ON batch_run(end_time);
+create index batch_run_startime_idx on batch_run(start_time);
+create index batch_run_endtime_idx on batch_run(end_time);
+
+create sequence  outbox_id_seq start with 1000;
+
+create table outbox(
+    id  numeric(19,0) not null default nextval('outbox_id_seq'),
+    oid varchar(36) not null,
+    type varchar(255) not null,
+    status varchar(255) not null,
+    payload jsonb not null,
+    updated timestamptz not null default clock_timestamp(),
+    primary key (id)
+);
+
+create index outbox_status on outbox(status);
+create index outbox_updated on outbox(updated);
