@@ -9,6 +9,7 @@ import io.micronaut.data.model.DataType
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
+import java.time.ZoneOffset
 
 
 @MappedEntity
@@ -21,8 +22,8 @@ data class PulsEventTotal(
     val type: String,
     @field:TypeDef(type = DataType.JSON)
     val properties: Map<String,Any> = emptyMap(),
-    val created: OffsetDateTime = OffsetDateTime.now(),
-    val updated: OffsetDateTime = OffsetDateTime.now()
+    val created: Instant = Instant.now(),
+    val updated: Instant = Instant.now()
 )
 
 fun PulsEventTotal.isNew(): Boolean = id == null

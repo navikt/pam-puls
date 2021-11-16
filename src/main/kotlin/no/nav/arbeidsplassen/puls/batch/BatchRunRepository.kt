@@ -8,6 +8,8 @@ import io.micronaut.data.runtime.config.DataSettings
 import java.sql.Connection
 import java.sql.PreparedStatement
 import java.sql.Statement
+import java.sql.Timestamp
+import java.time.Instant
 import javax.transaction.Transactional
 
 @JdbcRepository(dialect = Dialect.POSTGRES)
@@ -41,8 +43,8 @@ abstract class BatchRunRepository(private val connection: Connection): CrudRepos
         setString(index, entity.name)
         setString(++index, entity.status.name)
         setInt(++index, entity.totalEvents)
-        setObject(++index, entity.startTime)
-        setObject(++index, entity.endTime)
+        setTimestamp(++index, entity.startTime.toTimestamp())
+        setTimestamp(++index, entity.endTime.toTimestamp())
         if (entity.isNew()) {
             DataSettings.QUERY_LOG.debug("Executing SQL INSERT: $insertSQL")
         }
@@ -59,5 +61,6 @@ abstract class BatchRunRepository(private val connection: Connection): CrudRepos
     @Transactional
     @Query("SELECT MAX(id) FROM batch_run")
     abstract fun findMaxId(): Long?
-
 }
+
+fun Instant.toTimestamp() = Timestamp.from(this)

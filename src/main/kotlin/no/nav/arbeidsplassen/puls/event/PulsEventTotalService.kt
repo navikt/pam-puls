@@ -22,11 +22,11 @@ class PulsEventTotalService(private val repository: PulsEventTotalRepository) {
     }
 
     private fun PulsEventTotal.toDTO(): PulsEventTotalDTO {
-        return PulsEventTotalDTO(id = id, oid = oid, total = total, type=type, properties = properties)
+        return PulsEventTotalDTO(id = id, oid = oid, total = total, type=type, properties = properties, created=created, updated=updated)
     }
 
     private fun PulsEventTotalDTO.toEntity(): PulsEventTotal {
-        return PulsEventTotal(id=id, oid=oid, total=total, type=type, properties = properties)
+        return PulsEventTotal(id=id, oid=oid, total=total, type=type, properties = properties, created=created, updated=updated)
     }
 
     fun findByOid(oid: String): List<PulsEventTotalDTO> {

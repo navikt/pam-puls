@@ -1,5 +1,6 @@
 package no.nav.arbeidsplassen.puls.batch
 
+import io.micronaut.aop.Around
 import jakarta.inject.Singleton
 import kotlinx.coroutines.runBlocking
 import no.nav.arbeidsplassen.puls.amplitude.AmplitudeClient
@@ -8,41 +9,44 @@ import no.nav.arbeidsplassen.puls.event.PulsEventTotalService
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.time.Instant
-import java.time.OffsetDateTime
-import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
-import java.time.temporal.ChronoUnit
+import java.time.temporal.ChronoUnit.HOURS
 import java.util.zip.GZIPInputStream
 import java.util.zip.ZipFile
+import javax.transaction.Transactional
 
 
 @Singleton
+@Around
 class BatchFetchAmplitudeExport(private val client: AmplitudeClient, private val amplitudeParser: AmplitudeParser,
                                 private val pulsEventTotalService: PulsEventTotalService, private val batchRunRepository: BatchRunRepository) {
 
-    private val formatter = DateTimeFormatter.ofPattern("yyyyMMdd'T'HH").withZone(ZoneId.from(ZoneOffset.UTC))
 
     companion object {
         private val LOG = LoggerFactory.getLogger(BatchFetchAmplitudeExport::class.java)
     }
 
-    fun startBatchRunFetchExports() {
-        val fetchFrom = batchRunRepository.findMaxId()?.let {
-            batchRunRepository.findById(it).get().endTime.plus(1,ChronoUnit.HOURS)
-        } ?: run {
-            OffsetDateTime.now().minus(2, ChronoUnit.HOURS)
-        }
-        val exportInfo = fetchAmplitudeExport(fetchFrom)
-        batchRunRepository.findByName(exportInfo.batchRunName)?.let {
+    fun startBatchRunFetchExports(fetchFrom: Instant = Instant.now().minus(2, HOURS), fetchTo: Instant = fetchFrom): BatchRun {
+        LOG.info("Fetch from is $fetchFrom")
+        val exportInfo = prepareExportInfo(fetchFrom, fetchTo)
+        return batchRunRepository.findByName(exportInfo.batchRunName)?.let {
             LOG.warn("${it.name} already exist in database last updated ${it.updated}, skipping run")
+            it
         } ?: run {
+            LOG.info("Running batch ${exportInfo.batchRunName}")
+            fetchAmplitudeExport(exportInfo)
             crunchAmplitudeExportData(exportInfo)
         }
-        exportInfo.tmpFile.delete()
     }
 
-    private fun crunchAmplitudeExportData(exportInfo: AmplitudeExportInfo) {
+    private fun prepareExportInfo(fetchFrom: Instant, fetchTo: Instant): AmplitudeExportInfo {
+        val batchName = "amplitude-${fetchFrom.toAmplitudeString()}-${fetchTo.toAmplitudeString()}"
+        return AmplitudeExportInfo(File("/tmp/${batchName}.zip"), batchName, fetchFrom.truncatedTo(HOURS) ,fetchTo.truncatedTo(HOURS))
+    }
+
+    @Transactional
+    fun crunchAmplitudeExportData(exportInfo: AmplitudeExportInfo): BatchRun {
         val batchRun = batchRunRepository.save(
             BatchRun(
                 name = exportInfo.batchRunName,
@@ -57,24 +61,22 @@ class BatchFetchAmplitudeExport(private val client: AmplitudeClient, private val
             totalEvents = +events.size
         }
         LOG.info("Batch ${exportInfo.batchRunName} run successfully with totalEvents $totalEvents")
-        batchRunRepository.save(batchRun.copy(status = BatchRunStatus.DONE, totalEvents = totalEvents))
         unzippedFiles.forEach { File(it).delete() }
+        exportInfo.tmpFile.delete()
+        return batchRunRepository.save(batchRun.copy(status = BatchRunStatus.DONE, totalEvents = totalEvents))
     }
 
-    fun fetchAmplitudeExport(startTime: OffsetDateTime = OffsetDateTime.now().minus(2, ChronoUnit.HOURS),
-                             endTime: OffsetDateTime = startTime): AmplitudeExportInfo {
-        val startstr = formatter.format(startTime)
-        val endstr = formatter.format(endTime)
-        LOG.info("Fetching amplitude export from $startstr to $endstr")
-        val batchName = "amplitude-$startstr-$endstr"
-        val tmpFile = File("/tmp/$batchName.zip")
+    private fun fetchAmplitudeExport(exportInfo: AmplitudeExportInfo) {
+        val startTime = exportInfo.startTime.toAmplitudeString()
+        val endTime = exportInfo.endTime.toAmplitudeString()
+        LOG.info("Fetching amplitude export from $startTime to $endTime")
+        LOG.info("writing to ${exportInfo.tmpFile.name}")
         runBlocking {
-            tmpFile.outputStream().use { it.write(client.fetchExports(startstr, endstr)) }
+            exportInfo.tmpFile.outputStream().use { it.write(client.fetchExports(startTime,endTime)) }
         }
-        return AmplitudeExportInfo(tmpFile, batchName, tmpFile.length(),startTime.truncatedTo(ChronoUnit.HOURS), endTime.truncatedTo(ChronoUnit.HOURS))
     }
 
-    fun unzipExportFile(exportfile: File):List<String>  {
+    private fun unzipExportFile(exportfile: File):List<String>  {
         val files = mutableListOf<String>()
         ZipFile(exportfile).use { zip ->
             LOG.info("got zip file ${zip.name}")
@@ -94,6 +96,8 @@ class BatchFetchAmplitudeExport(private val client: AmplitudeClient, private val
         }
         return files
     }
-
 }
+val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMdd'T'HH").withZone(ZoneOffset.UTC)
+fun Instant.toAmplitudeString(): String = formatter.format(this)
+fun String.toInstant(): Instant = Instant.from(formatter.parse(this))
 

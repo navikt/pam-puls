@@ -6,6 +6,7 @@ micronaut:
   http:
     client:
       read-timeout: 300s
+      max-content-length: 50485760
   metrics:
     enabled: true
     binders:
@@ -39,7 +40,6 @@ datasources:
     maximum-pool-size: 4
     minimum-idle: 0
     pool-name: default
-    connection-init-sql: "set time zone 'UTC'"
 flyway:
   datasources:
     default:

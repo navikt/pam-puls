@@ -5,16 +5,18 @@ import io.micronaut.data.jdbc.annotation.JdbcRepository
 import io.micronaut.data.model.query.builder.sql.Dialect
 import io.micronaut.data.repository.CrudRepository
 import io.micronaut.data.runtime.config.DataSettings
+import no.nav.arbeidsplassen.puls.batch.toTimestamp
 import java.sql.Connection
 import java.sql.PreparedStatement
 import java.sql.Statement
+import java.time.ZoneOffset
 import javax.transaction.Transactional
 
 @JdbcRepository(dialect = Dialect.POSTGRES)
 abstract class PulsEventTotalRepository(private val connection: Connection, private val objectMapper: ObjectMapper): CrudRepository<PulsEventTotal, Long> {
 
     val insertSQL = """insert into "puls_event_total" ("oid", "total", "type", "properties", "created", "updated" ) values (?,?,?,?::jsonb,?,clock_timestamp())"""
-    val updateSQL = """update "puls_event_total" set "oid"=?, "total"=?, "type"=?, "properties"=?, "created"=?, "updated"=clock_timestamp() where "id"=?"""
+    val updateSQL = """update "puls_event_total" set "oid"=?, "total"=?, "type"=?, "properties"=?::jsonb, "created"=?, "updated"=clock_timestamp() where "id"=?"""
 
 
     @Transactional
@@ -45,7 +47,7 @@ abstract class PulsEventTotalRepository(private val connection: Connection, priv
         setLong(2, entity.total)
         setString(3, entity.type)
         setString(4, objectMapper.writeValueAsString(entity.properties))
-        setObject(5, entity.created)
+        setTimestamp(5, entity.created.toTimestamp())
         if (entity.isNew()) {
             DataSettings.QUERY_LOG.debug("Executing SQL INSERT: $insertSQL")
         }
@@ -54,8 +56,6 @@ abstract class PulsEventTotalRepository(private val connection: Connection, priv
             DataSettings.QUERY_LOG.debug("Executing SQL UPDATE: $updateSQL")
         }
     }
-
     @Transactional
     abstract fun findByOid(oid: String): List<PulsEventTotal>
-
 }
