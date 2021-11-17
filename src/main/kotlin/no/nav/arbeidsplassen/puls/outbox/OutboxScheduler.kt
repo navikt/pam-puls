@@ -9,9 +9,11 @@ import java.time.Instant
 import java.time.temporal.ChronoUnit
 
 @Singleton
-class OutboxScheduler(private val repository: OutboxRepository, private val election: LeaderElection) {
+class OutboxScheduler(private val repository: OutboxRepository, private val election: LeaderElection,
+                      private val kafkaSender: OutboxKafkaSender) {
 
     private val daysOld: Long = 7
+    private var kafkaHasError = false
 
     companion object {
         private val LOG = LoggerFactory.getLogger(OutboxScheduler::class.java)
@@ -19,14 +21,26 @@ class OutboxScheduler(private val repository: OutboxRepository, private val elec
 
     @Scheduled(fixedDelay = "10s")
     fun outboxToKafka() {
-        if (election.isLeader()) {
-            var count = 0
-            repository.findByStatusOrderByUpdated(OutboxStatus.PENDING, Pageable.from(0, 200)).forEach {
-                //TODO send to kafka here
-                repository.save(it.copy(status = OutboxStatus.DONE))
-                count++
+        if (election.isLeader() && kafkaHasError.not()) {
+            var ok = 0
+            var error = 0
+            repository.findByStatusOrderByUpdated(OutboxStatus.PENDING, Pageable.from(0, 200)).forEach { outbox ->
+                val key = outbox.payload.oid
+                kafkaSender.sendPulsEvent(key, outbox.payload).subscribe(
+                    {
+                        LOG.info("Successfully sent to kafka event with key: $key")
+                        repository.save(outbox.copy(status = OutboxStatus.DONE))
+                        ok++
+                    },
+                    {
+                        LOG.error("Got error while sending to kafka, will stop sending", it)
+                        repository.save(outbox.copy(status = OutboxStatus.ERROR))
+                        kafkaHasError = true
+                    }
+                )
             }
-            if (count>0) LOG.info("$count pulsevents was sent to kafka")
+            if (ok>0) LOG.info("$ok pulsevents was sent to kafka")
+            if (error>0) LOG.error("We got $error while trying to send to kafka")
         }
     }
 

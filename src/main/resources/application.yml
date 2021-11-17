@@ -16,6 +16,12 @@ micronaut:
         enabled: true
       jvm:
         enabled: true
+      web:
+        enabled: true
+      logback:
+        enabled: true
+      jdbc:
+        enabled: true
     export:
       prometheus:
         enabled: true
