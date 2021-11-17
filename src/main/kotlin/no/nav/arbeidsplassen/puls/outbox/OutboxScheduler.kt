@@ -25,7 +25,7 @@ class OutboxScheduler(private val repository: OutboxRepository, private val elec
             var ok = 0
             var error = 0
             repository.findByStatusOrderByUpdated(OutboxStatus.PENDING, Pageable.from(0, 200)).forEach { outbox ->
-                val key = outbox.payload.oid
+                val key = "${outbox.payload.oid}/${outbox.payload.type}"
                 kafkaSender.sendPulsEvent(key, outbox.payload).subscribe(
                     {
                         LOG.info("Successfully sent to kafka event with key: $key")
@@ -36,6 +36,7 @@ class OutboxScheduler(private val repository: OutboxRepository, private val elec
                         LOG.error("Got error while sending to kafka, will stop sending", it)
                         repository.save(outbox.copy(status = OutboxStatus.ERROR))
                         kafkaHasError = true
+                        error++
                     }
                 )
             }

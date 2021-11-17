@@ -23,5 +23,5 @@ services:
       DB_USERNAME: puls
       DB_DRIVER: org.postgresql.Driver
       DB_HOST: 'postgres'
-      AMPLITUDE_APIKEY: ${AMPLITUDE_APIKEY}
+      AMPLITUDE_KEY: ${AMPLITUDE_KEY}
       AMPLITUDE_SECRET: ${AMPLITUDE_SECRET}

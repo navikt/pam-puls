@@ -12,6 +12,6 @@ interface OutboxKafkaSender {
 
     @KafkaClient(batch = true)
     @Topic("pam-puls-intern-1")
-    fun sendPulsEvent(@KafkaKey oid: String, pulsevent: PulsEventTotalDTO): Flux<RecordMetadata>
+    fun sendPulsEvent(@KafkaKey key: String, pulsevent: PulsEventTotalDTO): Flux<RecordMetadata>
 
 }
