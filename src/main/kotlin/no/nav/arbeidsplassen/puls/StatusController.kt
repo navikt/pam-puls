@@ -8,7 +8,7 @@ import io.micronaut.http.annotation.Put
 import org.slf4j.LoggerFactory
 
 @Controller("/internal")
-class StatusController(private val consumerRegistry: ConsumerRegistry) {
+class StatusController() {
 
     companion object {
         private val LOG = LoggerFactory.getLogger(StatusController::class.java)
