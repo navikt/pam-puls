@@ -21,7 +21,7 @@ class LeaderElection(@Client("LeaderElect") val client: HttpClient,
     private val electorUri = "http://"+electorPath;
 
     init {
-        LOG.info("leader elaction initialized this hostname is $hostname")
+        LOG.info("leader election initialized this hostname is $hostname")
     }
 
     companion object {
@@ -36,7 +36,7 @@ class LeaderElection(@Client("LeaderElect") val client: HttpClient,
         if (electorPath == "NOLEADERELECTION") return hostname;
         if (leader.isBlank() || lastCalled.isBefore(LocalDateTime.now().minusMinutes(2))) {
             leader = objectMapper.readValue(Mono.from(client.retrieve(electorUri)).block(), Elector::class.java).name
-            LOG.info("Running leader election getLeader is {} ", leader)
+            LOG.debug("Running leader election getLeader is {} ", leader)
             lastCalled = LocalDateTime.now()
         }
         return leader
