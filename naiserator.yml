@@ -29,10 +29,6 @@ spec:
   prometheus:
     enabled: true
     path: /internal/prometheus
-  ingresses:
-  {{#each ingress as |url|}}
-     - {{url}}
-  {{/each}}
   envFrom:
     - secret: pam-puls
   env:
