@@ -48,6 +48,6 @@ flyway:
       #clean-on-validation-error: true
 
 amplitude:
-  apikey: 'apikey'
+  key: 'apikey'
   secret: 'secret'
 

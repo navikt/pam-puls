@@ -11,6 +11,6 @@ import org.reactivestreams.Publisher
 class AmpltudeClientFilter(private val config: AmplitudeConfig) : HttpClientFilter {
 
     override fun doFilter(request: MutableHttpRequest<*>, chain: ClientFilterChain): Publisher<out HttpResponse<*>?> {
-        return chain.proceed(request.basicAuth(config.apikey, config.secret))
+        return chain.proceed(request.basicAuth(config.key, config.secret))
     }
 }

@@ -8,7 +8,7 @@ import io.micronaut.context.annotation.Requires
 @Requires(property = AmplitudeConfig.PREFIX)
 class AmplitudeConfig {
 
-    var apikey: String? = null
+    var key: String? = null
     var secret: String? = null
 
     companion object {
