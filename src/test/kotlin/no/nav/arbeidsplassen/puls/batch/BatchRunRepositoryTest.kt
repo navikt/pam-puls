@@ -28,5 +28,9 @@ class BatchRunRepositoryTest(private val batchRunRepository: BatchRunRepository)
         val exists = batchRunRepository.findByStartTimeGreaterThanEquals(from)
         assertNotNull(exists)
         assertTrue(exists.isNotEmpty())
+        val newStart = to.plus(1, ChronoUnit.HOURS)
+        assertNull(batchRunRepository.startTimeIntersectInterval(newStart))
+        assertNotNull(batchRunRepository.startTimeIntersectInterval(from))
+        assertNotNull(batchRunRepository.startTimeIntersectInterval(to))
     }
 }

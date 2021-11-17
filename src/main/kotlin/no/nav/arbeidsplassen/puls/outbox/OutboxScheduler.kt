@@ -20,11 +20,13 @@ class OutboxScheduler(private val repository: OutboxRepository, private val elec
     @Scheduled(fixedDelay = "10s")
     fun outboxToKafka() {
         if (election.isLeader()) {
-            LOG.info("Sending outbox events to kafka")
-            repository.findByStatusOrderByUpdated(OutboxStatus.PENDING, Pageable.from(0, 100)).forEach {
+            var count = 0
+            repository.findByStatusOrderByUpdated(OutboxStatus.PENDING, Pageable.from(0, 200)).forEach {
                 //TODO send to kafka here
                 repository.save(it.copy(status = OutboxStatus.DONE))
+                count++
             }
+            if (count>0) LOG.info("$count pulsevents was sent to kafka")
         }
     }
 
@@ -33,7 +35,7 @@ class OutboxScheduler(private val repository: OutboxRepository, private val elec
         if (election.isLeader()) {
             val old = Instant.now().minus(daysOld,ChronoUnit.DAYS)
             val deleted = repository.deleteByStatusAndUpdatedBefore(OutboxStatus.DONE, old)
-            LOG.info("total $deleted was deleted")
+            LOG.info("total $deleted old events from outbox was deleted")
         }
     }
 

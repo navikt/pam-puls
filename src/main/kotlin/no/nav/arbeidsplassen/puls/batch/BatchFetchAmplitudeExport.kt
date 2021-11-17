@@ -17,6 +17,7 @@ import java.time.temporal.ChronoUnit.HOURS
 import java.util.zip.GZIPInputStream
 import java.util.zip.ZipFile
 import javax.transaction.Transactional
+import kotlin.math.exp
 
 
 @Singleton
@@ -31,12 +32,12 @@ class BatchFetchAmplitudeExport(private val client: AmplitudeClient, private val
     }
 
     fun startBatchRunFetchExports(fetchFrom: Instant = Instant.now().minus(2, HOURS), fetchTo: Instant = fetchFrom): BatchRun {
-        LOG.info("Fetch from is $fetchFrom")
         val exportInfo = prepareExportInfo(fetchFrom, fetchTo)
-        return batchRunRepository.findByName(exportInfo.batchRunName)?.let {
-            LOG.warn("${it.name} already exist in database last updated ${it.updated}, skipping run")
+        LOG.info("Will run batch from ${exportInfo.startTime} to ${exportInfo.endTime}")
+        return batchRunRepository.startTimeIntersectInterval(exportInfo.startTime)?.let {
+            LOG.warn("This start time intersect with a batch that already exist in database, skipping run")
             it
-        } ?: run {
+        } ?: kotlin.run {
             LOG.info("Running batch ${exportInfo.batchRunName}")
             fetchAmplitudeExport(exportInfo)
             crunchAmplitudeExportData(exportInfo)
@@ -100,6 +101,7 @@ class BatchFetchAmplitudeExport(private val client: AmplitudeClient, private val
         }
         return files
     }
+
 }
 val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMdd'T'HH").withZone(ZoneOffset.UTC)
 fun Instant.toAmplitudeString(): String = formatter.format(this)

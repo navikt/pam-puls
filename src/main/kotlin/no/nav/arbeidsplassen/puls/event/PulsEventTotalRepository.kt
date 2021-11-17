@@ -43,16 +43,17 @@ abstract class PulsEventTotalRepository(private val connection: Connection, priv
     }
 
     private fun PreparedStatement.prepareSQL(entity: PulsEventTotal) {
-        setObject(1, entity.oid)
-        setLong(2, entity.total)
-        setString(3, entity.type)
-        setString(4, objectMapper.writeValueAsString(entity.properties))
-        setTimestamp(5, entity.created.toTimestamp())
+        var index=1
+        setObject(index, entity.oid)
+        setLong(++index, entity.total)
+        setString(++index, entity.type)
+        setString(++index, objectMapper.writeValueAsString(entity.properties))
+        setTimestamp(++index, entity.created.toTimestamp())
         if (entity.isNew()) {
             DataSettings.QUERY_LOG.debug("Executing SQL INSERT: $insertSQL")
         }
         else {
-            setLong(6, entity.id!!)
+            setLong(++index, entity.id!!)
             DataSettings.QUERY_LOG.debug("Executing SQL UPDATE: $updateSQL")
         }
     }
