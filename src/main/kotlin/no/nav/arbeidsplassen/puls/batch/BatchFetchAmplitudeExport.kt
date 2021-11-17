@@ -35,7 +35,7 @@ class BatchFetchAmplitudeExport(private val client: AmplitudeClient, private val
         val exportInfo = prepareExportInfo(fetchFrom, fetchTo)
         LOG.info("Will run batch from ${exportInfo.startTime} to ${exportInfo.endTime}")
         return batchRunRepository.startTimeIntersectInterval(exportInfo.startTime)?.let {
-            LOG.warn("This start time intersect with a batch that already exist in database, skipping run")
+            LOG.info("This start time intersect with a batch that already exist in database, skipping run")
             it
         } ?: kotlin.run {
             LOG.info("Running batch ${exportInfo.batchRunName}")

@@ -13,7 +13,7 @@ class BatchScheduler(private val batchFetchAmplitudeExport: BatchFetchAmplitudeE
         private val LOG = LoggerFactory.getLogger(BatchScheduler::class.java)
     }
 
-    @Scheduled(fixedDelay = "31m")
+    @Scheduled(fixedDelay = "16m")
     fun startFetchAmplitudeAndProcessEvents() {
         if (leaderElection.isLeader()) {
             LOG.info("Running fetch export from amplitude")
