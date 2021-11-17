@@ -38,7 +38,7 @@ spec:
   env:
     - name: DB_DRIVER
       value: "org.postgresql.Driver"
-   gcp:
+  gcp:
     sqlInstances:
       - name: pam-puls
         type: POSTGRES_12
