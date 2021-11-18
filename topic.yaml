@@ -13,7 +13,7 @@ spec:
     partitions: 3
     replication: 3
     retentionBytes: -1  # -1 means unlimited
-    retentionHours: 720 # 30 days
+    retentionHours: 360 #  15 days
   acl:
     - team: teampam
       application: pam-puls

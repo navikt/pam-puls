@@ -12,7 +12,7 @@ import java.time.temporal.ChronoUnit
 class OutboxScheduler(private val repository: OutboxRepository, private val election: LeaderElection,
                       private val kafkaSender: OutboxKafkaSender) {
 
-    private val daysOld: Long = 7
+    private val daysOld: Long = 14
     private var kafkaHasError = false
 
     companion object {
@@ -22,27 +22,22 @@ class OutboxScheduler(private val repository: OutboxRepository, private val elec
     @Scheduled(fixedDelay = "10s")
     fun outboxToKafka() {
         if (election.isLeader() && kafkaHasError.not()) {
-            var ok = 0
-            var error = 0
             repository.findByStatusOrderByUpdated(OutboxStatus.PENDING, Pageable.from(0, 200)).forEach { outbox ->
-                val key = "${outbox.payload.oid}/${outbox.payload.type}"
+                val key = "${outbox.payload.oid}#${outbox.payload.type}"
                 kafkaSender.sendPulsEvent(key, outbox.payload).subscribe(
                     {
-                        LOG.info("Successfully sent to kafka event with key: $key")
                         repository.save(outbox.copy(status = OutboxStatus.DONE))
-                        ok++
+                        LOG.debug("sent successfully $key")
                     },
                     {
                         LOG.error("Got error while sending to kafka, will stop sending", it)
                         repository.save(outbox.copy(status = OutboxStatus.ERROR))
                         kafkaHasError = true
-                        error++
                     }
                 )
             }
-            if (ok>0) LOG.info("$ok pulsevents was sent to kafka")
-            if (error>0) LOG.error("We got $error while trying to send to kafka")
         }
+        else if (kafkaHasError) LOG.error("Kafka is error state!")
     }
 
     @Scheduled(cron = "0 0 8 * * *")
