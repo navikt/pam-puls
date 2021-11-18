@@ -30,7 +30,7 @@ spec:
     enabled: true
     path: /internal/prometheus
   kafka:
-    pool: { { kafka_pool } }
+    pool: "{{ kafka_pool }}"
   envFrom:
     - secret: pam-puls
   env:
