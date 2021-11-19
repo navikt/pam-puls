@@ -11,7 +11,7 @@ import reactor.core.publisher.Flux
 interface OutboxKafkaSender {
 
     @KafkaClient(batch = true)
-    @Topic("pam-puls-intern-2")
+    @Topic("teampam.pam-puls-intern-2")
     fun sendPulsEvent(@KafkaKey key: String, pulsevent: PulsEventTotalDTO): Flux<RecordMetadata>
 
 }
