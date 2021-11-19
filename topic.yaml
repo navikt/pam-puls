@@ -1,7 +1,9 @@
 apiVersion: kafka.nais.io/v1
 kind: Topic
-metadata:
-  name: pam-puls-intern-1
+metadata:metadata:
+  annotations:
+    kafka.nais.io/removeDataWhenResourceIsDeleted: "true"
+  name: pam-puls-intern-2
   namespace: teampam
   labels:
     team: teampam
@@ -11,13 +13,13 @@ spec:
     cleanupPolicy: compact,delete
     minimumInSyncReplicas: 1
     partitions: 3
-    replication: 3
+    replication: 2
     retentionBytes: -1  # -1 means unlimited
-    retentionHours: 360 #  15 days
+    retentionHours: 168 #  7 days
   acl:
     - team: teampam
       application: pam-puls
-      access: readwrite   # read, write, readwrite
+      access: readwrite
     - team: teampam
       application: aiven-tuan
       access: readwrite

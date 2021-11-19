@@ -13,21 +13,24 @@ class OutboxScheduler(private val repository: OutboxRepository, private val elec
                       private val kafkaSender: OutboxKafkaSender) {
 
     private val daysOld: Long = 14
-    private var kafkaHasError = true
+    private var kafkaHasError = false
+    private var counter=0
 
     companion object {
         private val LOG = LoggerFactory.getLogger(OutboxScheduler::class.java)
     }
 
-    @Scheduled(fixedDelay = "24h")
+    @Scheduled(fixedDelay = "30s")
     fun outboxToKafka() {
         if (election.isLeader() && kafkaHasError.not()) {
-            repository.findByStatusOrderByUpdated(OutboxStatus.PENDING, Pageable.from(0, 200)).forEach { outbox ->
+            LOG.info("Running outbox to kafka sender, we have previously sent $counter")
+            repository.findByStatusOrderByUpdated(OutboxStatus.PENDING, Pageable.from(0, 100)).forEach { outbox ->
                 val key = "${outbox.payload.oid}#${outbox.payload.type}"
                 kafkaSender.sendPulsEvent(key, outbox.payload).subscribe(
                     {
                         repository.save(outbox.copy(status = OutboxStatus.DONE))
                         LOG.debug("sent successfully $key")
+                        counter++
                     },
                     {
                         LOG.error("Got error while sending to kafka, will stop sending", it)
@@ -37,7 +40,7 @@ class OutboxScheduler(private val repository: OutboxRepository, private val elec
                 )
             }
         }
-        //else if (kafkaHasError) LOG.error("Kafka is error state!")
+        else if (kafkaHasError) LOG.error("Kafka is error state!")
     }
 
     @Scheduled(cron = "0 0 8 * * *")
