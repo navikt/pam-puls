@@ -56,4 +56,9 @@ flyway:
 amplitude:
   key: 'apikey'
   secret: 'secret'
+kafka:
+  producers:
+    default:
+      linger.ms: 5000
+      batch.size: 65536
 
