@@ -19,4 +19,7 @@ spec:
   acl:
     - team: teampam
       application: pam-puls
-      access: readwrite   # read, write, readwrite
+      access: readwrite
+    - team: teampam
+      application: aiven-tuan
+      access: readwrite
