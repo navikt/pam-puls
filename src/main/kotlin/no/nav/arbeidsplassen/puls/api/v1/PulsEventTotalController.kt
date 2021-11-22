@@ -1,6 +1,5 @@
 package no.nav.arbeidsplassen.puls.api.v1
 
-import io.micronaut.context.annotation.Parameter
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Get
 import io.micronaut.http.annotation.PathVariable

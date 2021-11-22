@@ -45,7 +45,7 @@ abstract class PulsEventTotalRepository(private val connection: Connection, priv
 
     private fun PreparedStatement.prepareSQL(entity: PulsEventTotal) {
         var index=1
-        setObject(index, entity.oid)
+        setString(index, entity.oid)
         setLong(++index, entity.total)
         setString(++index, entity.type)
         setString(++index, objectMapper.writeValueAsString(entity.properties))
