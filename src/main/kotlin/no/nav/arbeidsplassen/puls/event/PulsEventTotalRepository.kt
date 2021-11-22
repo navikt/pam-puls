@@ -2,6 +2,7 @@ package no.nav.arbeidsplassen.puls.event
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.micronaut.data.jdbc.annotation.JdbcRepository
+import io.micronaut.data.model.Pageable
 import io.micronaut.data.model.query.builder.sql.Dialect
 import io.micronaut.data.repository.CrudRepository
 import io.micronaut.data.runtime.config.DataSettings
@@ -60,4 +61,7 @@ abstract class PulsEventTotalRepository(private val connection: Connection, priv
 
     @Transactional
     abstract fun findByOid(oid: String): List<PulsEventTotal>
+
+    @Transactional
+    abstract fun findByTypeOrderByTotalDesc(type: String, pageable: Pageable): List<PulsEventTotal>
 }

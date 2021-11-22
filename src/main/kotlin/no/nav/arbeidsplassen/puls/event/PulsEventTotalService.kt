@@ -1,5 +1,6 @@
 package no.nav.arbeidsplassen.puls.event
 
+import io.micronaut.data.model.Pageable
 import jakarta.inject.Singleton
 import no.nav.arbeidsplassen.puls.outbox.Outbox
 import no.nav.arbeidsplassen.puls.outbox.OutboxRepository
@@ -35,6 +36,10 @@ class PulsEventTotalService(private val repository: PulsEventTotalRepository, pr
 
     fun findByOid(oid: String): List<PulsEventTotalDTO> {
         return repository.findByOid(oid).map { it.toDTO() }
+    }
+
+    fun findPulsEventTotalByTypeAndTopByNumber(type: String, number: Int): List<PulsEventTotalDTO> {
+        return repository.findByTypeOrderByTotalDesc(type, Pageable.from(0,number)).map { it.toDTO() }
     }
 
 }
