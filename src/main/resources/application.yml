@@ -28,9 +28,13 @@ micronaut:
         step: PT1M
         descriptions: true
 endpoints:
-  all:
+  metrics:
     enabled: true
+  prometheus:
     sensitive: false
+    enabled: true
+  all:
+    path: "/internal"
 
 jackson:
   bean-introspection-module: true
