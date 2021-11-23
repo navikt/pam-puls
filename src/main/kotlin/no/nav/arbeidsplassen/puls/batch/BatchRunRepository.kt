@@ -62,6 +62,10 @@ abstract class BatchRunRepository(private val connection: Connection): CrudRepos
     abstract fun findByStartTimeGreaterThanEquals(startTime: Instant): List<BatchRun>
 
     @Transactional
+    abstract fun findByStartTimeBetween(startTime: Instant, endTime: Instant): List<BatchRun>
+
+
+    @Transactional
     @Query("SELECT * FROM batch_run b WHERE b.start_time <=:startTime AND b.end_time >=:startTime", nativeQuery = true)
     abstract fun startTimeIntersectInterval(startTime: Instant): BatchRun?
 

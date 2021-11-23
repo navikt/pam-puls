@@ -24,8 +24,8 @@ class BatchRunController(private val batchRunRepository: BatchRunRepository,
     }
 
     @Get("/periode")
-    fun fetchLastBatchRun(@QueryValue from: String): List<BatchRun> {
-        return batchRunRepository.findByStartTimeGreaterThanEquals(from.toInstant())
+    fun fetchBatchRunPeriod(@QueryValue from: String, @QueryValue to: String): List<BatchRun> {
+        return batchRunRepository.findByStartTimeBetween(from.toInstant(), to.toInstant())
     }
 
     @Post("/start")
