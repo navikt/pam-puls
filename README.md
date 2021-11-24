@@ -1,6 +1,11 @@
 # Puls
 
-Fetch amplitude exports and aggregate all events. Events are stored in database, and can be fetched through
-a REST api and a kafka topic.
+![](https://storage.googleapis.com/teampam-dev/puls/Puls.png)
 
-Timestamps are stored as UTC. 
+## What does it do:
+* Fetch amplitude exports 
+* Filter out unknown events, and aggregate the events.
+* Events are stored in database, 
+* Allow events to be fetched via REST api or a kafka.
+
+NOTE: All Timestamps are stored as UTC.  
