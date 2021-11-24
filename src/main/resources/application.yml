@@ -22,6 +22,8 @@ micronaut:
         enabled: true
       jdbc:
         enabled: true
+      kafka:
+        enabled: true
     export:
       prometheus:
         enabled: true
