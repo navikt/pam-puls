@@ -23,3 +23,9 @@ spec:
     - team: teampam
       application: aiven-tuan
       access: readwrite
+    - team: teampam
+      application: pam-import-api
+      access: read
+    - team: teampam
+      application: pam-stillingsregistrering-ap
+      access: read
