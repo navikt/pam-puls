@@ -27,5 +27,5 @@ spec:
       application: pam-import-api
       access: read
     - team: teampam
-      application: pam-stillingsregistrering-ap
+      application: pam-stillingsregistrering-api
       access: read
