@@ -1,7 +1,5 @@
 # Puls
 
-![](https://storage.googleapis.com/teampam-dev/puls/Puls.png)
-
 ## What does it do:
 * Fetch amplitude exports 
 * Filter out unknown events, and aggregate the events.
