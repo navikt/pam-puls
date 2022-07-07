@@ -13,7 +13,7 @@ class AmplitudeConfig {
 
     companion object {
         const val PREFIX = "amplitude"
-        const val API_URL = "https://amplitude.com/api/2"
+        const val API_URL = "https://analytics.eu.amplitude.com/api/2"
     }
 
 }
