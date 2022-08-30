@@ -1,9 +1,5 @@
-# Puls
+## Beskrivelse
 
-## What does it do:
-* Fetch amplitude exports 
-* Filter out unknown events, and aggregate the events.
-* Events are stored in database, 
-* Allow events to be fetched via REST api or a kafka.
+pam-puls henter eksport fra Amplitude og tilbyr metrikkene på REST API og Kafka. Applikasjonen filtrerer ut ukjente metrikker og aggregerer metrikker før de lagres i en database.
 
-NOTE: All Timestamps are stored as UTC.  
+PS: Alle timestamps er lagret som UTC.
