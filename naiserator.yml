@@ -31,8 +31,6 @@ spec:
     path: /internal/prometheus
   kafka:
     pool: "{{ kafka_pool }}"
-  envFrom:
-    - secret: pam-puls
   env:
     - name: DB_DRIVER
       value: "org.postgresql.Driver"
