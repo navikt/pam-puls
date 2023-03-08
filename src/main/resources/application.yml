@@ -60,8 +60,7 @@ flyway:
       #clean-on-validation-error: true
 
 amplitude:
-  key: 'apikey'
-  secret: 'secret'
+  proxy_base_url: ${AMPLITUDE_PROXY_BASE_URL:https://analytics.eu.amplitude.com/api/2}
 
 kafka:
   producers:

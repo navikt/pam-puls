@@ -36,6 +36,8 @@ spec:
   env:
     - name: DB_DRIVER
       value: "org.postgresql.Driver"
+    - name: AMPLITUDE_PROXY_BASE_URL
+      value: "{{ amplitude_proxy_base_url }}"
   gcp:
     sqlInstances:
       - name: pam-puls
