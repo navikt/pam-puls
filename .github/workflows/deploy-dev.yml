@@ -8,6 +8,7 @@ on:
       - "CODEOWNERS"
     branches:
       - main
+      - opprydding
 
 jobs:
   call-workflow:
@@ -15,6 +16,7 @@ jobs:
     with:
       NAIS_RESOURCE: naiserator.yml,topic.yaml
       SNYK_ENABLED: true
+      JAVA_VERSION: "17"
     secrets:
       NAIS_DEPLOY_APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
       SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}

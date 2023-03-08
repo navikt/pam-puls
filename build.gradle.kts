@@ -1,22 +1,24 @@
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "1.5.31"
-    id("org.jetbrains.kotlin.kapt") version "1.5.31"
+    kotlin("jvm") version "1.7.10"
+    kotlin("kapt") version "1.7.10"
+    id("org.jetbrains.kotlin.plugin.allopen") version "1.7.10"
     id("com.github.johnrengelman.shadow") version "7.1.0"
-    id("io.micronaut.application") version "2.0.6"
-    id("org.jetbrains.kotlin.plugin.allopen") version "1.5.31"
+    id("io.micronaut.application") version "3.7.4"
 }
 
 version = "0.1"
-group "no.nav.arbeidsplassen.puls"
+group = "no.nav.arbeidsplassen.puls"
 
-val kotlinVersion= project.properties["kotlinVersion"]
-val micronautKafkaVersion= project.properties["micronautKafkaVersion"]
-val micronautMicrometerVersion= project.properties["micronautMicrometerVersion"]
-val logbackEncoderVersion= project.properties["logbackEncoderVersion"]
-val jakartaPersistenceVersion= project.properties["jakartaPersistenceVersion"]
-val postgresqlVersion= project.properties["postgresqlVersion"]
-val tcVersion= project.properties["tcVersion"]
-val javaVersion= project.properties["javaVersion"]
+val kotlinVersion = project.properties["kotlinVersion"]
+val micronautKafkaVersion = project.properties["micronautKafkaVersion"]
+val micronautMicrometerVersion = project.properties["micronautMicrometerVersion"]
+val logbackEncoderVersion = project.properties["logbackEncoderVersion"]
+val jakartaPersistenceVersion = project.properties["jakartaPersistenceVersion"]
+val postgresqlVersion = project.properties["postgresqlVersion"]
+val tcVersion = project.properties["tcVersion"]
+val javaVersion = project.properties["javaVersion"]
+val jacksonVersion = project.properties["jacksonVersion"]
+val jupiterVersion = project.properties["jupiterVersion"]
 
 repositories {
     mavenLocal()
@@ -49,7 +51,7 @@ dependencies {
     runtimeOnly("ch.qos.logback:logback-classic")
     runtimeOnly("net.logstash.logback:logstash-logback-encoder:${logbackEncoderVersion}")
     implementation("io.micronaut:micronaut-validation")
-    runtimeOnly("com.fasterxml.jackson.module:jackson-module-kotlin")
+    runtimeOnly("com.fasterxml.jackson.module:jackson-module-kotlin:${jacksonVersion}")
     implementation("io.micronaut.micrometer:micronaut-micrometer-core")
     implementation("io.micronaut.micrometer:micronaut-micrometer-registry-prometheus")
     implementation("io.micronaut:micronaut-management")
@@ -58,11 +60,9 @@ dependencies {
     implementation("io.micronaut.sql:micronaut-jdbc-hikari")
     implementation("io.micronaut.flyway:micronaut-flyway")
     testImplementation("io.micronaut.test:micronaut-test-junit5")
-    testImplementation("org.junit.jupiter:junit-jupiter-engine")
+    testImplementation("org.junit.jupiter:junit-jupiter-engine:${jupiterVersion}")
     testImplementation("org.testcontainers:postgresql:${tcVersion}")
-
 }
-
 
 application {
     mainClass.set("no.nav.arbeidsplassen.puls.Application")
@@ -83,9 +83,7 @@ tasks {
             jvmTarget = "$javaVersion"
         }
     }
-
     test {
         exclude("**/*IT.class")
     }
-
 }
