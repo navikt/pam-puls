@@ -13,8 +13,7 @@ import java.time.Instant
 import javax.transaction.Transactional
 
 @JdbcRepository(dialect = Dialect.POSTGRES)
-abstract class BatchRunRepository(private val connection: Connection): CrudRepository<BatchRun, Long> {
-
+abstract class BatchRunRepository(private val connection: Connection) : CrudRepository<BatchRun, Long> {
     val insertSQL = """insert into "batch_run" ("name","status", "updated", "total_events", "start_time", "end_time") values (?,?,clock_timestamp(),?,?,?)"""
     val updateSQL = """update "batch_run" set "name"=?, "status"=?, "updated"=clock_timestamp(), "total_events"=?, "start_time"=?, "end_time"=? where "id"=?"""
 
@@ -28,18 +27,17 @@ abstract class BatchRunRepository(private val connection: Connection): CrudRepos
                 @Suppress("UNCHECKED_CAST")
                 return entity.copy(id = generatedKeys.getLong(1)) as S
             }
-        }
-        else {
+        } else {
             connection.prepareStatement(updateSQL).apply {
                 prepareSQL(entity)
-                check(executeUpdate() == 1 )
+                check(executeUpdate() == 1)
                 return entity
             }
         }
     }
 
     private fun PreparedStatement.prepareSQL(entity: BatchRun) {
-        var index=1
+        var index = 1
         setString(index, entity.name)
         setString(++index, entity.status.name)
         setInt(++index, entity.totalEvents)
@@ -47,8 +45,7 @@ abstract class BatchRunRepository(private val connection: Connection): CrudRepos
         setTimestamp(++index, entity.endTime.toTimestamp())
         if (entity.isNew()) {
             DataSettings.QUERY_LOG.debug("Executing SQL INSERT: $insertSQL")
-        }
-        else {
+        } else {
             setLong(++index, entity.id!!)
             DataSettings.QUERY_LOG.debug("Executing SQL UPDATE: $updateSQL")
         }
@@ -56,7 +53,7 @@ abstract class BatchRunRepository(private val connection: Connection): CrudRepos
     }
 
     @Transactional
-    abstract fun findByName(name:String): BatchRun?
+    abstract fun findByName(name: String): BatchRun?
 
     @Transactional
     abstract fun findByStartTimeGreaterThanEquals(startTime: Instant): List<BatchRun>
@@ -68,9 +65,6 @@ abstract class BatchRunRepository(private val connection: Connection): CrudRepos
     @Transactional
     @Query("SELECT * FROM batch_run b WHERE b.start_time <=:startTime AND b.end_time >=:startTime", nativeQuery = true)
     abstract fun startTimeIntersectInterval(startTime: Instant): BatchRun?
-
-
-
 }
 
 fun Instant.toTimestamp() = Timestamp.from(this)

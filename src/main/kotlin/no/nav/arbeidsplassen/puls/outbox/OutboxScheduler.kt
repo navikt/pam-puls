@@ -9,9 +9,10 @@ import java.time.Instant
 import java.time.temporal.ChronoUnit
 
 @Singleton
-class OutboxScheduler(private val repository: OutboxRepository, private val election: LeaderElection,
-                      private val kafkaSender: OutboxKafkaSender) {
-
+class OutboxScheduler(
+    private val repository: OutboxRepository, private val election: LeaderElection,
+    private val kafkaSender: OutboxKafkaSender
+) {
     private val daysOld: Long = 14
     private var kafkaHasError = false
     private var counter=0
@@ -46,10 +47,9 @@ class OutboxScheduler(private val repository: OutboxRepository, private val elec
     @Scheduled(cron = "0 0 8 * * *")
     fun cleanOldEvents() {
         if (election.isLeader()) {
-            val old = Instant.now().minus(daysOld,ChronoUnit.DAYS)
+            val old = Instant.now().minus(daysOld, ChronoUnit.DAYS)
             val deleted = repository.deleteByStatusAndUpdatedBefore(OutboxStatus.DONE, old)
             LOG.info("total $deleted old events from outbox was deleted")
         }
     }
-
 }

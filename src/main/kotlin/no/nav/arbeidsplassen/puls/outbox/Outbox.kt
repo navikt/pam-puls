@@ -8,7 +8,6 @@ import io.micronaut.data.model.DataType
 import no.nav.arbeidsplassen.puls.event.PulsEventTotalDTO
 import java.time.Instant
 
-
 @MappedEntity
 data class Outbox(
     @field:Id
@@ -21,7 +20,8 @@ data class Outbox(
     val status: OutboxStatus = OutboxStatus.PENDING,
     @field:TypeDef(type = DataType.JSON)
     val payload: PulsEventTotalDTO,
-    val updated: Instant = Instant.now())
+    val updated: Instant = Instant.now()
+)
 
 fun Outbox.isNew(): Boolean = id == null
 

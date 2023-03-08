@@ -6,9 +6,10 @@ import no.nav.arbeidsplassen.puls.LeaderElection
 import org.slf4j.LoggerFactory
 
 @Singleton
-class BatchScheduler(private val batchFetchAmplitudeExport: BatchFetchAmplitudeExport,
-                     private val leaderElection: LeaderElection) {
-
+class BatchScheduler(
+    private val batchFetchAmplitudeExport: BatchFetchAmplitudeExport,
+    private val leaderElection: LeaderElection
+) {
     companion object {
         private val LOG = LoggerFactory.getLogger(BatchScheduler::class.java)
     }
@@ -19,8 +20,7 @@ class BatchScheduler(private val batchFetchAmplitudeExport: BatchFetchAmplitudeE
             LOG.info("Running fetch export from amplitude")
             val time = System.currentTimeMillis()
             batchFetchAmplitudeExport.startBatchRunFetchExports()
-            LOG.info("Batch was finished in ${(System.currentTimeMillis()-time)/1000}s")
+            LOG.info("Batch was finished in ${(System.currentTimeMillis() - time) / 1000}s")
         }
     }
-
 }

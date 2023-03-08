@@ -9,8 +9,6 @@ import java.io.File
 
 @Singleton
 class AmplitudeParser(private val objectMapper: ObjectMapper) {
-
-
     private val factory = JsonFactory()
 
     companion object {
@@ -56,4 +54,5 @@ class AmplitudeParser(private val objectMapper: ObjectMapper) {
 }
 
 data class AmplitudeEvent(val event_type: String, val event_properties: HashMap<String, Any>)
+
 val EVENT_TYPES = listOf("Stilling visning", "Stilling sok-via-url")

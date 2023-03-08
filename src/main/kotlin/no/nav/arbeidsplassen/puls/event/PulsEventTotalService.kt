@@ -6,9 +6,10 @@ import no.nav.arbeidsplassen.puls.outbox.Outbox
 import no.nav.arbeidsplassen.puls.outbox.OutboxRepository
 
 @Singleton
-class PulsEventTotalService(private val repository: PulsEventTotalRepository, private val outboxRepository: OutboxRepository) {
-
-
+class PulsEventTotalService(
+    private val repository: PulsEventTotalRepository,
+    private val outboxRepository: OutboxRepository
+) {
     fun findByOidAndType(oid: String, type: String): PulsEventTotalDTO? {
         return repository.findByOidAndType(oid, type)?.toDTO()
     }

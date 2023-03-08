@@ -1,15 +1,11 @@
 package no.nav.arbeidsplassen.puls.batch
 
-import io.micronaut.core.annotation.Introspected
 import io.micronaut.data.annotation.GeneratedValue
 import io.micronaut.data.annotation.Id
 import io.micronaut.data.annotation.MappedEntity
 import io.micronaut.data.annotation.TypeDef
 import io.micronaut.data.model.DataType
 import java.time.Instant
-import java.time.OffsetDateTime
-import java.time.ZoneOffset
-
 
 @MappedEntity
 data class BatchRun(
@@ -24,4 +20,5 @@ data class BatchRun(
     val startTime: Instant = Instant.now(),
     val endTime: Instant = Instant.now()
 )
+
 fun BatchRun.isNew(): Boolean = id == null

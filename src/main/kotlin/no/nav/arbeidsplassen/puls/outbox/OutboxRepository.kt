@@ -13,8 +13,10 @@ import java.time.Instant
 import javax.transaction.Transactional
 
 @JdbcRepository(dialect = Dialect.POSTGRES)
-abstract class OutboxRepository(private val connection: Connection, private val objectMapper: ObjectMapper): CrudRepository<Outbox, Long> {
-
+abstract class OutboxRepository(
+    private val connection: Connection,
+    private val objectMapper: ObjectMapper
+) : CrudRepository<Outbox, Long> {
     val insertSQL = """insert into "outbox" ("oid", "type", "status", "payload", "updated" ) values (?,?,?,?::jsonb,clock_timestamp())"""
     val updateSQL = """update "outbox" set "oid"=?, "type"=?, "status"=?, "payload"=?::jsonb, "updated"=clock_timestamp() where "id"=?"""
 
@@ -28,26 +30,24 @@ abstract class OutboxRepository(private val connection: Connection, private val 
                 @Suppress("UNCHECKED_CAST")
                 return entity.copy(id = generatedKeys.getLong(1)) as S
             }
-        }
-        else {
+        } else {
             connection.prepareStatement(updateSQL).apply {
                 prepareSQL(entity)
-                check(executeUpdate() == 1 )
+                check(executeUpdate() == 1)
                 return entity
             }
         }
     }
 
     private fun PreparedStatement.prepareSQL(entity: Outbox) {
-        var index=1
+        var index = 1
         setString(index, entity.oid)
         setString(++index, entity.type.name)
         setString(++index, entity.status.name)
         setString(++index, objectMapper.writeValueAsString(entity.payload))
         if (entity.isNew()) {
             DataSettings.QUERY_LOG.debug("Executing SQL INSERT: $insertSQL")
-        }
-        else {
+        } else {
             setLong(++index, entity.id!!)
             DataSettings.QUERY_LOG.debug("Executing SQL UPDATE: $updateSQL")
         }
@@ -58,5 +58,4 @@ abstract class OutboxRepository(private val connection: Connection, private val 
 
     @Transactional
     abstract fun deleteByStatusAndUpdatedBefore(outboxStatus: OutboxStatus, before: Instant): Int
-
 }

@@ -11,14 +11,15 @@ import jakarta.inject.Singleton
 import reactor.core.publisher.Mono
 
 @Singleton
-class LeaderElection(@Client("LeaderElect") val client: HttpClient,
-                     @Value("\${ELECTOR_PATH:NOLEADERELECTION}") val electorPath: String,
-                     val objectMapper: ObjectMapper) {
-
+class LeaderElection(
+    @Client("LeaderElect") val client: HttpClient,
+    @Value("\${ELECTOR_PATH:NOLEADERELECTION}") val electorPath: String,
+    val objectMapper: ObjectMapper
+) {
     private val hostname = InetAddress.getLocalHost().hostName
-    private var leader =  "";
+    private var leader = "";
     private var lastCalled = LocalDateTime.MIN
-    private val electorUri = "http://"+electorPath;
+    private val electorUri = "http://" + electorPath;
 
     init {
         LOG.info("leader election initialized this hostname is $hostname")

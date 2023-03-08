@@ -1,7 +1,6 @@
 package no.nav.arbeidsplassen.puls.batch
 
 import io.micrometer.core.instrument.MeterRegistry
-import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import io.micronaut.aop.Around
 import jakarta.inject.Singleton
 import kotlinx.coroutines.runBlocking
@@ -17,21 +16,22 @@ import java.time.temporal.ChronoUnit.HOURS
 import java.util.zip.GZIPInputStream
 import java.util.zip.ZipFile
 import javax.transaction.Transactional
-import kotlin.math.exp
-
 
 @Singleton
 @Around
-class BatchFetchAmplitudeExport(private val client: AmplitudeClient, private val amplitudeParser: AmplitudeParser,
-                                private val pulsEventTotalService: PulsEventTotalService, private val batchRunRepository: BatchRunRepository,
-                                private val meterRegistry: MeterRegistry) {
-
-
+class BatchFetchAmplitudeExport(
+    private val client: AmplitudeClient, private val amplitudeParser: AmplitudeParser,
+    private val pulsEventTotalService: PulsEventTotalService, private val batchRunRepository: BatchRunRepository,
+    private val meterRegistry: MeterRegistry
+) {
     companion object {
         private val LOG = LoggerFactory.getLogger(BatchFetchAmplitudeExport::class.java)
     }
 
-    fun startBatchRunFetchExports(fetchFrom: Instant = Instant.now().minus(2, HOURS), fetchTo: Instant = fetchFrom): BatchRun {
+    fun startBatchRunFetchExports(
+        fetchFrom: Instant = Instant.now().minus(2, HOURS),
+        fetchTo: Instant = fetchFrom
+    ): BatchRun {
         val exportInfo = prepareExportInfo(fetchFrom, fetchTo)
         LOG.info("Will run batch from ${exportInfo.startTime} to ${exportInfo.endTime}")
         return batchRunRepository.startTimeIntersectInterval(exportInfo.startTime)?.let {
@@ -46,7 +46,12 @@ class BatchFetchAmplitudeExport(private val client: AmplitudeClient, private val
 
     private fun prepareExportInfo(fetchFrom: Instant, fetchTo: Instant): AmplitudeExportInfo {
         val batchName = "amplitude-${fetchFrom.toAmplitudeString()}-${fetchTo.toAmplitudeString()}"
-        return AmplitudeExportInfo(File("/tmp/${batchName}.zip"), batchName, fetchFrom.truncatedTo(HOURS) ,fetchTo.truncatedTo(HOURS))
+        return AmplitudeExportInfo(
+            File("/tmp/${batchName}.zip"),
+            batchName,
+            fetchFrom.truncatedTo(HOURS),
+            fetchTo.truncatedTo(HOURS)
+        )
     }
 
     @Transactional
@@ -64,7 +69,7 @@ class BatchFetchAmplitudeExport(private val client: AmplitudeClient, private val
             pulsEventTotalService.updatePulsEventTotal(events)
             totalEvents = +events.size
         }
-        if (totalEvents<=0) LOG.error("Batch run ${exportInfo.batchRunName} did not produced any events size: $totalEvents")
+        if (totalEvents <= 0) LOG.error("Batch run ${exportInfo.batchRunName} did not produced any events size: $totalEvents")
         else LOG.info("Batch ${exportInfo.batchRunName} run successfully with totalEvents $totalEvents")
         meterRegistry.counter("batch_run", "name", "amplitude").increment(totalEvents.toDouble())
         unzippedFiles.forEach { File(it).delete() }
@@ -78,11 +83,11 @@ class BatchFetchAmplitudeExport(private val client: AmplitudeClient, private val
         LOG.info("Fetching amplitude export from $startTime to $endTime")
         LOG.info("writing to ${exportInfo.tmpFile.name}")
         runBlocking {
-            exportInfo.tmpFile.outputStream().use { it.write(client.fetchExports(startTime,endTime)) }
+            exportInfo.tmpFile.outputStream().use { it.write(client.fetchExports(startTime, endTime)) }
         }
     }
 
-    private fun unzipExportFile(exportfile: File):List<String>  {
+    private fun unzipExportFile(exportfile: File): List<String> {
         val files = mutableListOf<String>()
         ZipFile(exportfile).use { zip ->
             LOG.info("got zip file ${zip.name}")
@@ -104,7 +109,7 @@ class BatchFetchAmplitudeExport(private val client: AmplitudeClient, private val
     }
 
 }
+
 val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMdd'T'HH").withZone(ZoneOffset.UTC)
 fun Instant.toAmplitudeString(): String = formatter.format(this)
 fun String.toInstant(): Instant = Instant.from(formatter.parse(this))
-

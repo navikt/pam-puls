@@ -11,15 +11,16 @@ import no.nav.arbeidsplassen.puls.batch.toInstant
 import org.slf4j.LoggerFactory
 
 @Controller("/api/v1/batchruns")
-class BatchRunController(private val batchRunRepository: BatchRunRepository,
-                         private val batchFetchAmplitudeExport: BatchFetchAmplitudeExport) {
-
+class BatchRunController(
+    private val batchRunRepository: BatchRunRepository,
+    private val batchFetchAmplitudeExport: BatchFetchAmplitudeExport
+) {
     companion object {
         private val LOG = LoggerFactory.getLogger(BatchRunController::class.java)
     }
 
     @Get("/name/{name}")
-    fun fetchBatchRunByName(name:String): BatchRun? {
+    fun fetchBatchRunByName(name: String): BatchRun? {
         return batchRunRepository.findByName(name)
     }
 

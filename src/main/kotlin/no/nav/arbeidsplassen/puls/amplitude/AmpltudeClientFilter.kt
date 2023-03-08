@@ -9,7 +9,6 @@ import org.reactivestreams.Publisher
 
 @Filter("/api/2/**")
 class AmpltudeClientFilter(private val config: AmplitudeConfig) : HttpClientFilter {
-
     override fun doFilter(request: MutableHttpRequest<*>, chain: ClientFilterChain): Publisher<out HttpResponse<*>?> {
         return chain.proceed(request.basicAuth(config.key, config.secret))
     }
