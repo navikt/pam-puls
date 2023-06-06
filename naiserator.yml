@@ -58,3 +58,4 @@ spec:
             - port: 443
               name: https
               protocol: HTTPS
+        - host: reops-proxy.intern.nav.no
