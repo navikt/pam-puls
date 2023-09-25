@@ -10,7 +10,7 @@ spec:
     - name: "pam-puls-alerts"
       rules:
         - alert: "pam-puls har ikke kjørt ferdig batchjobb på mer enn ett døgn"
-          expr: sum(increase(pam_puls_batch_success[1d])) < 1
+          expr: sum(increase(pam_puls_batch_success_total[1d])) < 1
           for: 1h
           annotations:
             consequence: "App {{ $labels.app }} i namespace {{ $labels.namespace }} har ikke kjørt ferdig batchjobb på mer enn ett døgn"
