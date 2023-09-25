@@ -87,15 +87,7 @@ class BatchFetchAmplitudeExport(
         runBlocking {
             try {
                 val exportsResponse = client.fetchExports(startTime, endTime)
-                if (exportsResponse.statusCode() == 404) {
-                    LOG.info("Amplitude returned empty export data (404) for $startTime to $endTime")
-                } else if (exportsResponse.statusCode() in 200..299
-                    && exportsResponse.body() != null
-                ) {
-                    exportInfo.tmpFile.outputStream().use { it.write(exportsResponse.body()) }
-                } else {
-                    LOG.error("Amplitude returned statuscode ${exportsResponse.statusCode()} for export from $startTime to $endTime")
-                }
+                exportInfo.tmpFile.outputStream().use { it.write(exportsResponse) }
             } catch (e: HttpClientResponseException) {
                 LOG.warn("Failed to get export data from amplitude from $startTime to $endTime: ${e.message}. " +
                         "status-code: ${e.status.code}")

@@ -14,5 +14,5 @@ import java.net.http.HttpResponse
 interface AmplitudeClient {
     @Get("/export")
     @Header(name = ACCEPT, value = "application/zip")
-    suspend fun fetchExports(@QueryValue("start") start: String, @QueryValue("end") end: String): HttpResponse<ByteArray?>
+    suspend fun fetchExports(@QueryValue("start") start: String, @QueryValue("end") end: String): ByteArray
 }
