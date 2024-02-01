@@ -45,7 +45,6 @@ spec:
         highAvailability: true
         diskSize: 20
         diskAutoresize: true
-        autoBackupTime: "03:00"
         databases:
           - name: puls
             envVarPrefix: DB
@@ -54,8 +53,4 @@ spec:
     outbound:
       external:
         - host: amplitude.com
-          ports:
-            - port: 443
-              name: https
-              protocol: HTTPS
         - host: reops-proxy.intern.nav.no
