@@ -29,6 +29,11 @@ spec:
   prometheus:
     enabled: true
     path: /internal/prometheus
+  observability:
+    logging:
+      destinations:
+        - id: loki
+        - id: elastic
   kafka:
     pool: "{{ kafka_pool }}"
   env:
