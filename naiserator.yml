@@ -58,4 +58,4 @@ spec:
     outbound:
       external:
         - host: amplitude.com
-        - host: reops-proxy.intern.nav.no
+        - host: "{{ amplitude_proxy_host }}"

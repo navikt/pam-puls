@@ -1,5 +1,6 @@
 {
   "cloudsql_tier": "db-custom-1-3840",
   "kafka_pool": "nav-dev",
-  "amplitude_proxy_base_url": "https://reops-proxy.intern.nav.no/amplitude/100000243/api/2"
+  "amplitude_proxy_base_url": "https://reops-proxy.intern.dev.nav.no/amplitude/100000243/api/2",
+  "amplitude_proxy_host": "reops-proxy.intern.dev.nav.no"
 }
