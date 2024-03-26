@@ -68,3 +68,6 @@ kafka:
       linger.ms: 5000
       batch.size: 65536
 
+logger:
+  levels:
+    io.micronaut.http: DEBUG
