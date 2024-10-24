@@ -6,11 +6,11 @@ import io.micronaut.data.model.Pageable
 import io.micronaut.data.model.query.builder.sql.Dialect
 import io.micronaut.data.repository.CrudRepository
 import io.micronaut.data.runtime.config.DataSettings
+import jakarta.transaction.Transactional
 import no.nav.arbeidsplassen.puls.batch.toTimestamp
 import java.sql.Connection
 import java.sql.PreparedStatement
 import java.sql.Statement
-import javax.transaction.Transactional
 
 @JdbcRepository(dialect = Dialect.POSTGRES)
 abstract class PulsEventTotalRepository(

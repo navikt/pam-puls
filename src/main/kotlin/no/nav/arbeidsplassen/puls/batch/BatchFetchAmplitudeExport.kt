@@ -4,20 +4,19 @@ import io.micrometer.core.instrument.MeterRegistry
 import io.micronaut.aop.Around
 import io.micronaut.http.client.exceptions.HttpClientResponseException
 import jakarta.inject.Singleton
+import jakarta.transaction.Transactional
 import kotlinx.coroutines.runBlocking
 import no.nav.arbeidsplassen.puls.amplitude.AmplitudeClient
 import no.nav.arbeidsplassen.puls.amplitude.AmplitudeParser
 import no.nav.arbeidsplassen.puls.event.PulsEventTotalService
 import org.slf4j.LoggerFactory
 import java.io.File
-import java.net.http.HttpResponse
 import java.time.Instant
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit.HOURS
 import java.util.zip.GZIPInputStream
 import java.util.zip.ZipFile
-import javax.transaction.Transactional
 
 @Singleton
 @Around

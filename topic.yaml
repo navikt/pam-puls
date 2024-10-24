@@ -29,3 +29,6 @@ spec:
     - team: teampam
       application: pam-stillingsregistrering-api
       access: read
+    - team: teampam
+      application: pam-kafka-manager
+      access: read
