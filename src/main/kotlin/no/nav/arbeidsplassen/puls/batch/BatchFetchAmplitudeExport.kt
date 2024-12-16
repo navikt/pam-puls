@@ -85,7 +85,7 @@ class BatchFetchAmplitudeExport(
         LOG.info("writing to ${exportInfo.tmpFile.name}")
         runBlocking {
             try {
-                val exportsResponse = client.fetchExports(startTime, endTime)
+                val exportsResponse = client.fetchExports(startTime, endTime) ?: ByteArray(0)
                 exportInfo.tmpFile.outputStream().use { it.write(exportsResponse) }
             } catch (e: HttpClientResponseException) {
                 LOG.warn("Failed to get export data from amplitude from $startTime to $endTime: ${e.message}. " +
