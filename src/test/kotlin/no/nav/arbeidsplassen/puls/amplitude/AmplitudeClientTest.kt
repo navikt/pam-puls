@@ -12,7 +12,7 @@ class AmplitudeClientTest(private val client: AmplitudeClient) {
     fun fetchExport() {
         runBlocking {
             val tmpFile = File("/tmp/amplitude.zip")
-            tmpFile.outputStream().use { it.write(client.fetchExports("20220228T00","20220228T23")) }
+            tmpFile.outputStream().use { it.write(client.fetchExports("20220228T00","20220228T23") ?: ByteArray(0)) }
         }
     }
 }
