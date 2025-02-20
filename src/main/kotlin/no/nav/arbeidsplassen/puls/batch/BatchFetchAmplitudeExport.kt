@@ -70,7 +70,7 @@ class BatchFetchAmplitudeExport(
             pulsEventTotalService.updatePulsEventTotal(events)
             totalEvents = +events.size
         }
-        if (totalEvents <= 0) LOG.error("Batch run ${exportInfo.batchRunName} did not produced any events size: $totalEvents")
+        if (totalEvents <= 0) LOG.warn("Batch run ${exportInfo.batchRunName} did not produced any events size: $totalEvents")
         else LOG.info("Batch ${exportInfo.batchRunName} run successfully with totalEvents $totalEvents")
         meterRegistry.counter("batch_run", "name", "amplitude").increment(totalEvents.toDouble())
         unzippedFiles.forEach { File(it).delete() }
